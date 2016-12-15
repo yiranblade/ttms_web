@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>    
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p= "http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd 
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd 
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd 
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop.xsd">    
+  
+  
+    <bean id="dataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass"
+			value="com.mysql.jdbc.Driver">
+		</property>
+		<property name="jdbcUrl"
+			value="jdbc:mysql://localhost:3306/ttms">
+		</property>
+		<property name="user" value="root"></property>
+		<property name="password" value="123456"></property>
+		<property name="minPoolSize" value="5"/>
+		<property name="maxPoolSize" value="100"/>   
+        <property name="initialPoolSize" value="6"/>   
+        <property name="maxIdleTime" value="600"/>  
+        <property name="acquireIncrement" value="5"/>    
+        <property name="maxStatements" value="5"/>  
+        <property name="idleConnectionTestPeriod" value="60"/> 		
+	</bean>
+      
+    <!-- session工厂 -->  
+    <bean id="sessionFactory"  
+        class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">  
+        <property name="dataSource">  
+            <ref bean="dataSource" />  
+        </property>  
+        
+        <property name="configLocation" value="classpath:hibernate.cfg.xml"/>  
+        <!--加载实体类配置文件-->
+        <property name="mappingResources">  
+			<list>  
+				<value>com/ttms/domain/Seat.hbm.xml</value>  
+				<value>com/ttms/domain/Studio.hbm.xml</value>
+				<value>com/ttms/domain/User.hbm.xml</value>
+			</list>  
+		</property>   
+         
+    </bean>  
+  
+    <!-- 配置事务管理器 -->  
+    <bean id="transactionManager"  
+        class="org.springframework.orm.hibernate5.HibernateTransactionManager">  
+        <property name="sessionFactory" ref="sessionFactory" />  
+    </bean>  
+  	
+           
+    	
+    <!-- 配置事务通知属性 -->  
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">  
+        <!-- 定义事务传播属性 -->  
+        <tx:attributes>  
+            <tx:method name="Insert*" propagation="REQUIRED" />  
+            <tx:method name="Update*" propagation="REQUIRED" />  
+            <tx:method name="Edit*" propagation="REQUIRED" />  
+            <tx:method name="Save*" propagation="REQUIRED" />  
+            <tx:method name="Add*" propagation="REQUIRED" />  
+            <tx:method name="New*" propagation="REQUIRED" />  
+            <tx:method name="Set*" propagation="REQUIRED" />  
+            <tx:method name="Remove*" propagation="REQUIRED" />  
+            <tx:method name="Delete*" propagation="REQUIRED" />  
+            <tx:method name="Change*" propagation="REQUIRED" />  
+            <tx:method name="Get*" propagation="REQUIRED"  read-only="true"/>  
+            <tx:method name="Find*" propagation="REQUIRED"  read-only="true"/>  
+            <tx:method name="Load*" propagation="REQUIRED"  read-only="true"/>  
+            <tx:method name="*" propagation="REQUIRED"  read-only="true"/>  
+        </tx:attributes>  
+    </tx:advice>  
+  
+    <!-- 配置事务切面 -->  
+    <aop:config>  
+        <aop:pointcut id="serviceOperation" 
+             expression="execution(* com.ttms.service..*.*(..))" />  
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceOperation" />  
+    </aop:config>  
+	<!--<bean class="com.creatshare.csns.interceptor.CorsConfigurerAdapter"></bean>-->
+   <!-- 自动加载构建bean -->  
+      
+   <context:component-scan base-package="com.ttms"/>
+      
+</beans>  

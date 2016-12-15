@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2016-12-14 14:59:17 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.ttms.domain.Studio" table="studio">
+        <id name="Studio_id" type="int">
+            <column name="studio_id" />
+            <generator class="assigned" />
+        </id>
+        <property name="Studio_area" type="java.lang.String">
+            <column name="studio_area" />
+        </property>
+        <property name="Studio_seat_row" type="int">
+            <column name="studio_seat_row" />
+        </property>
+        <property name="Studio_seat_colu" type="int">
+            <column name="studio_seat_colu" />
+        </property>
+        <list name="seats" inverse="false" table="SEAT" lazy="true">
+            <key>
+                <column name="studio_id" />
+            </key>
+            <list-index></list-index>
+            <one-to-many class="com.ttms.domain.Seat" />
+        </list>
+    </class>
+</hibernate-mapping>
